@@ -58,10 +58,10 @@ function AdminPanel({ children }) {
           {/* Navigation */}
           <nav className="p-4 space-y-3">
             <Link
-              to="/admin/AllCatgr"
+              to="/admin/categories"
               className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
               ${
-                isActive("/admin/AllCatgr")
+                isActive("/admin/categories")
                   ? "bg-indigo-100 text-indigo-700 shadow-md"
                   : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
               }`}
@@ -71,10 +71,10 @@ function AdminPanel({ children }) {
             </Link>
 
             <Link
-              to="/admin/AllUsers"
+              to="/admin/users"
               className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
               ${
-                isActive("/admin/AllUsers")
+                isActive("/admin/users")
                   ? "bg-indigo-100 text-indigo-700 shadow-md"
                   : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
               }`}

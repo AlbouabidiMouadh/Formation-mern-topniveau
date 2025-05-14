@@ -4,7 +4,6 @@ const initiateValue = {
   name: "",
   email: "",
   role: "",
-  token: "",
   isAuthenticated: false,
 };
 
@@ -17,7 +16,6 @@ export const adminSlice = createSlice({
       state.id = action.payload.id;
       state.email = action.payload.email;
       state.role = action.payload.role;
-      state.token = action.payload.token;
       state.isAuthenticated = true;
     },
     updateAdmin: (state, action) => {
@@ -25,7 +23,6 @@ export const adminSlice = createSlice({
       state.id = action.payload.id;
       state.email = action.payload.email;
       state.role = action.payload.role;
-      state.token = action.payload.token;
     },
     logoutAdmin: (state, action) => {
       state = initiateValue;

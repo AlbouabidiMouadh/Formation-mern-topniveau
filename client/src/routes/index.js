@@ -15,7 +15,7 @@ export const Routing = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route
-          path="/admin/categorie"
+          path="/admin/categories"
           element={
             admin.isAuthenticated ? <AllCatgr /> : <Navigate to={"/"} replace />
           }

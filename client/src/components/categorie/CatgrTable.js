@@ -10,7 +10,7 @@ const CatgrTable = ({ categorie, onEdit, onDelete }) => {
           </tr>
         </thead>
         <tbody>
-          {categorie.map((cat, index) => (
+          {categorie?.map((cat, index) => (
             <tr 
               key={cat._id} 
               className={`${

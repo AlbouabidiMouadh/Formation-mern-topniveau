@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import { CgClose } from 'react-icons/cg';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { CgClose } from "react-icons/cg";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { endpoint } from "../../utils/config";
 
 function AjouterCatgr({ onClose, fetchdata }) {
   const [categorie, Setcatgr] = useState({
-    NomCategorie: '',
-    type: '',
+    NomCategorie: "",
+    type: "",
   });
   const navigate = useNavigate();
 
@@ -20,32 +22,29 @@ function AjouterCatgr({ onClose, fetchdata }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Formulaire soumis');
+    console.log("Formulaire soumis");
 
     try {
-      const reponse = await fetch(`${process.env.REACT_APP_API_URL}/ajoutercatg`, {
-        method: 'POST',
+      const reponse = await axios.post(endpoint.addCategorie, categorie, {
         headers: {
-          'content-type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(categorie),
+        withCredentials: true,
       });
+      console.log("reponse", reponse);
 
-      const reponseData = await reponse.json();
-      console.log('reponse', reponseData);
-
-      if (reponse.ok) {
-        toast.success(reponseData?.msg || 'Catégorie ajoutée avec succès');
+      if (reponse.status === 201) {
+        toast.success(reponse.data?.msg || "Catégorie ajoutée avec succès");
         onClose();
         fetchdata();
-        Setcatgr({ NomCategorie: '', type: '' });
-        navigate('/admin/categorie');
+        Setcatgr({ NomCategorie: "", type: "" });
+        navigate("/admin/categories");
       } else {
-        toast.error(reponseData?.msg || 'Erreur lors de l’ajout');
+        toast.error(reponse.data?.msg || "Erreur lors de l’ajout");
       }
     } catch (error) {
-      console.error('Erreur réseau ou autre:', error);
-      toast.error('Erreur inattendue, veuillez réessayer');
+      console.error("Erreur réseau ou autre:", error);
+      toast.error("Erreur inattendue, veuillez réessayer");
     }
   };
 
@@ -57,13 +56,19 @@ function AjouterCatgr({ onClose, fetchdata }) {
           <div className="max-w-md mx-auto">
             <div>
               <h1 className="text-2xl font-semibold">Ajouter Catégorie</h1>
-              <div className="w-fit ml-auto text-2xl hover:text-red-500 cursor-pointer" onClick={onClose}>
+              <div
+                className="w-fit ml-auto text-2xl hover:text-red-500 cursor-pointer"
+                onClick={onClose}
+              >
                 <CgClose />
               </div>
             </div>
             <div className="divide-y divide-gray-200">
               <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <form onSubmit={handleSubmit} className="grid gap-2 p-4 h-full pb-2">
+                <form
+                  onSubmit={handleSubmit}
+                  className="grid gap-2 p-4 h-full pb-2"
+                >
                   <label htmlFor="CatgrName">Nom Catégorie</label>
                   <input
                     type="text"

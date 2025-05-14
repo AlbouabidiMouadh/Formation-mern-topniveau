@@ -7,6 +7,7 @@ import DeleteCatgr from "../../components/categorie/DeleteCatgr";
 import EditCatgr from "../../components/categorie/EditCatgr";
 import CatgrTable from "../../components/categorie/CatgrTable";
 import AdminPanel from "../../containers/AdminPanel";
+import { endpoint } from "../../utils/config";
 
 function AllCatgr() {
   const [categorie, setCategorie] = useState([]);
@@ -19,16 +20,12 @@ function AllCatgr() {
   // Récupérer toutes les catégories
   const getAllCatgr = async () => {
     try {
-      const fetchData = await fetch(
-        `${process.env.REACT_APP_API_URL}/categories`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      const response = await fetchData.json();
-      if (fetchData.ok) {
-        setCategorie(response.data?.result || response.data);
+      const response = await axios.get(endpoint.getAllCategorie, {
+        withCredentials: true,
+      });
+      console.log(response)
+      if (response.status === 201) {
+        setCategorie(response.data.data || []);
       } else {
         throw new Error(
           response.message || "Erreur lors de la récupération des catégories"
@@ -56,12 +53,10 @@ function AllCatgr() {
 
   const onDeleteCategorie = async (categorieId) => {
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_API_URL}/categorie/` + categorieId,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await axios.delete(endpoint.categorieById(categorieId), {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
       toast.success(response.data?.msg || "Catégorie supprimée avec succès");
       getAllCatgr();
       setViewDelete(false);
@@ -85,12 +80,15 @@ function AllCatgr() {
   const handleUpdateCatgr = async (updatedCatgr) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/modifiercatg/${updatedCatgr._id}`,
+        endpoint.categorieById(updatedCatgr._id),
         {
           NomCategorie: updatedCatgr.NomCategorie,
           type: updatedCatgr.type,
         },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
       );
       toast.success(response.data?.msg || "Catégorie mise à jour avec succès");
       getAllCatgr();
