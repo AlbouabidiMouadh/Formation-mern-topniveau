@@ -7,4 +7,9 @@ export const endpoint = {
   getAllCategorie: `${API_BASE_URL}/categories`,
   addCategorie: `${API_BASE_URL}/categorie`,
   categorieById: (id) => `${API_BASE_URL}/categorie/${id}`,
+
+  // produit
+  getAllProduit: `${API_BASE_URL}/produits`,
+  addProduit: `${API_BASE_URL}/produit`,
+  produitById: (id) => `${API_BASE_URL}/produit/${id}`,
 };

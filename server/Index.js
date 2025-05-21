@@ -30,10 +30,11 @@ const adminModel = require("./models/AdminModel");
 //importation Router
 const adminRouter = require("./routes/Admin.Routers");
 let catgRouter = require("./routes/Catg.Routers");
-app.post("/categorie", categorieCtrl.ajouterCatg);
+let produitsRouter = require("./routes/Produit.Routers");
 
 app.use("/api", catgRouter);
 app.use("/api", adminRouter);
+app.use("/api", produitsRouter);
 
 mongoose.set("strictQuery", true);
 

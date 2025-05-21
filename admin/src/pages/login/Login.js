@@ -27,13 +27,15 @@ function Login() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  try {
     const response = await axios.post(endpoint.login, data, {
+      withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
     });
-    console.log(response);
+
     if (response.status === 200) {
       const adminData = response.data.data.admin;
       dispatch(
@@ -44,12 +46,14 @@ function Login() {
           role: adminData.role,
         })
       );
-      toast.success(response.message);
+      toast.success(response.data?.msg || "Connexion réussie");
       setTimeout(() => navigate("/admin/categories"), 700);
-    } else {
-      toast.error(response.message);
     }
-  };
+  } catch (error) {
+    toast.error(error.response?.data?.msg || "Erreur de connexion");
+  }
+};
+
 
   return (
     <div className=" min-h-screen flex items-center justify-center bg-gradient-to-tr from-slate-400 to-blue-950 p-6">
