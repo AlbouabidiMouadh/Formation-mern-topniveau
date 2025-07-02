@@ -57,8 +57,8 @@ app.use("/api/files", fileUploadRouter); // for uploads
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    // await mongoose.connect(process.env.mongo_url, {
-    await mongoose.connect(process.env.MONGODB_URL, {
+     await mongoose.connect(process.env.mongo_url, {
+    //await mongoose.connect(process.env.MONGODB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
