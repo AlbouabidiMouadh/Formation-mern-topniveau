@@ -4,55 +4,96 @@ import { CgClose } from "react-icons/cg";
 import { endpoint } from "../../utils/config";
 import axios from "axios";
 
-function AjouterProduit({ onClose, fetchdata }) {
+function AjouterProduit({ onClose, fetchdata, categories }) {
   const [produit, setProduit] = useState({
-    productName: "",
-    brandName: "",
+    name: "",
+    brand: "",
     category: "",
-    price: "",
-    sellingPrice: "",
+    price: 0,
     description: "",
+    discount: 0,
+    quantite: 0,
+    imageUrl: "",
   });
+
+  const [imageFile, setImageFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduit((prev) => ({
       ...prev,
-      [name]: value,
+      [name]:
+        name === "price" || name === "discount" || name === "quantite"
+          ? Number(value)
+          : value,
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile) return "";
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+      setIsUploading(true);
+      const res = await axios.post(endpoint.imageUploadProduit, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return res.data.filePath;
+    } catch (err) {
+      toast.error("Échec de l'envoi de l'image");
+      return "";
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { name, brand, category, price } = produit;
 
-    const { productName, brandName, category, price, sellingPrice } = produit;
-
-    if (!productName || !brandName || !category || !price || !sellingPrice) {
-      toast.error("Tous les champs sont requis");
+    if (!name || !brand || !category || !price) {
+      toast.error("Tous les champs obligatoires doivent être remplis");
       return;
     }
 
+    const imageUrl = await uploadImage();
+    if (!imageUrl && imageFile) return;
+
     try {
-      const response = await axios.post(endpoint.ajouterProduit, produit, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        endpoint.addProduit,
+        { ...produit, imageUrl },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       toast.success(response.data?.msg || "Produit ajouté avec succès");
       onClose();
       fetchdata();
+
       setProduit({
-        productName: "",
-        brandName: "",
+        name: "",
+        brand: "",
         category: "",
-        price: "",
-        sellingPrice: "",
+        imageUrl: "",
+        price: 0,
         description: "",
+        discount: 0,
+        quantite: 0,
       });
+      setImageFile(null);
     } catch (error) {
-      console.error("Erreur lors de l'ajout :", error);
       toast.error(
         error.response?.data?.message || "Erreur inattendue, veuillez réessayer"
       );
@@ -60,100 +101,125 @@ function AjouterProduit({ onClose, fetchdata }) {
   };
 
   return (
-    <div className="fixed min-h-screen flex flex-col justify-center md:absolute sm:py-12">
+    <div className="fixed min-h-screen flex flex-col justify-center md:absolute sm:py-12 z-50">
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
         <div className="relative font-serif px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <div className="max-w-md mx-auto">
-            <div>
+            <div className="flex justify-between items-center">
               <h1 className="text-2xl font-semibold">Ajouter Produit</h1>
               <div
-                className="w-fit ml-auto text-2xl hover:text-red-500 cursor-pointer"
+                className="text-2xl hover:text-red-500 cursor-pointer"
                 onClick={onClose}
               >
                 <CgClose />
               </div>
             </div>
-            <div className="divide-y divide-gray-200">
-              <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <form onSubmit={handleSubmit} className="grid gap-2 p-4 h-full pb-2">
-                  <label htmlFor="productName">Nom du Produit</label>
-                  <input
-                    type="text"
-                    id="productName"
-                    name="productName"
-                    value={produit.productName}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-100 border rounded"
-                  />
+            <form onSubmit={handleSubmit} className="grid gap-2 p-4">
+              <label htmlFor="name">Nom du Produit</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={produit.name}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
 
-                  <label htmlFor="brandName">Marque</label>
-                  <input
-                    type="text"
-                    id="brandName"
-                    name="brandName"
-                    value={produit.brandName}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-100 border rounded"
-                  />
+              <label htmlFor="brand">Marque</label>
+              <input
+                type="text"
+                id="brand"
+                name="brand"
+                value={produit.brand}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
 
-                  <label htmlFor="category">Catégorie</label>
-                  <input
-                    type="text"
-                    id="category"
-                    name="category"
-                    value={produit.category}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-100 border rounded"
-                  />
+              <label htmlFor="category">Catégorie</label>
+              <select
+                id="category"
+                name="category"
+                value={produit.category}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              >
+                <option value="">-- Sélectionnez une catégorie --</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.NomCategorie}>
+                    {cat.NomCategorie}
+                  </option>
+                ))}
+              </select>
 
-                  <label htmlFor="price">Prix</label>
-                  <input
-                    type="number"
-                    id="price"
-                    name="price"
-                    value={produit.price}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-100 border rounded"
-                  />
+              <label htmlFor="price">Prix</label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={produit.price}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
 
-                  <label htmlFor="sellingPrice">Prix de Vente</label>
-                  <input
-                    type="number"
-                    id="sellingPrice"
-                    name="sellingPrice"
-                    value={produit.sellingPrice}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-100 border rounded"
-                  />
+              <label htmlFor="discount">Remise (%)</label>
+              <input
+                type="number"
+                id="discount"
+                name="discount"
+                value={produit.discount}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
 
-                  <label htmlFor="description">Description</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={produit.description}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-100 border rounded"
-                  />
+              <label htmlFor="quantite">Quantité</label>
+              <input
+                type="number"
+                id="quantite"
+                name="quantite"
+                value={produit.quantite}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
 
-                  <div className="relative space-x-3">
-                    <button
-                      type="submit"
-                      className="bg-blue-500 p-1 text-white rounded-md mb-10 hover:bg-blue-950"
-                    >
-                      Ajouter Produit
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-red-700 p-1 text-white rounded-md mb-10"
-                      onClick={onClose}
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </form>
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={produit.description}
+                onChange={handleChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
+
+              <label htmlFor="image">Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="p-2 bg-slate-100 border rounded"
+              />
+
+              <div className="flex gap-2 mt-4">
+                <button
+                  type="submit"
+                  disabled={isUploading}
+                  className={`p-2 text-white rounded-md mb-10 ${
+                    isUploading
+                      ? "bg-gray-400"
+                      : "bg-blue-600 hover:bg-blue-900"
+                  }`}
+                >
+                  {isUploading ? "Téléchargement..." : "Ajouter Produit"}
+                </button>
+                <button
+                  type="button"
+                  className="bg-red-700 p-2 text-white rounded-md mb-10"
+                  onClick={onClose}
+                >
+                  Annuler
+                </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

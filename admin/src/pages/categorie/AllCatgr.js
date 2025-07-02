@@ -102,8 +102,8 @@ function AllCatgr() {
 
   return (
     <AdminPanel>
-      <div className="min-h-screen flex items-center justify-center py-10">
-        <div className="w-full max-w-3xl rounded-lg shadow-gray-500 shadow-lg overflow-hidden">
+      <div className="min-h-screen flex items-start justify-center py-10">
+        <div className="w-full rounded-lg shadow-gray-500 shadow-lg overflow-hidden">
           <div className="bg-gradient-to-tr from-gray-4000 to-slate-400 py-2 px-4 flex justify-between items-center">
             <h2 className="text-3xl text-blue-950 font-extrabold text-center py-4 font-serif">
               Liste des Catégories

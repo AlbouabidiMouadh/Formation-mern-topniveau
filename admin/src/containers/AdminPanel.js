@@ -95,6 +95,18 @@ function AdminPanel({ children }) {
               <FaListAlt className="mr-3 w-5 h-5" />
               <span className="font-medium">Liste des utilisateurs</span>
             </Link>
+            <Link
+              to="/admin/orders"
+              className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
+              ${
+                isActive("/admin/orders")
+                  ? "bg-indigo-100 text-indigo-700 shadow-md"
+                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              }`}
+            >
+              <FaListAlt className="mr-3 w-5 h-5" />
+              <span className="font-medium">Liste des commandes</span>
+            </Link>
           </nav>
         </aside>
 

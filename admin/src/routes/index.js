@@ -8,6 +8,8 @@ import Login from "../pages/login/Login";
 import AllCatgr from "../pages/categorie/AllCatgr";
 import { useSelector } from "react-redux";
 import AllProduits from "../pages/produit/AllProduit";
+import AllUsers from "../pages/user/AllUsers";
+import AllOrders from "../pages/order/AllOrders";
 
 export const Routing = () => {
   const admin = useSelector((state) => state.admin);
@@ -26,6 +28,22 @@ export const Routing = () => {
           element={
             admin.isAuthenticated ? (
               <AllProduits />
+            ) : (
+              <Navigate to={"/"} replace />
+            )
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            admin.isAuthenticated ? <AllUsers /> : <Navigate to={"/"} replace />
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            admin.isAuthenticated ? (
+              <AllOrders />
             ) : (
               <Navigate to={"/"} replace />
             )

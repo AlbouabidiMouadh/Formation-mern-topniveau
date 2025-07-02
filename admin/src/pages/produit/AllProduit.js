@@ -16,6 +16,25 @@ function AllProduits() {
   const [produitDeleted, setProduitDeleted] = useState(null);
   const [selectedProduit, setSelectedProduit] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const getAllCatgr = async () => {
+    try {
+      const response = await axios.get(endpoint.getAllCategorie, {
+        withCredentials: true,
+      });
+      console.log(response);
+      if (response.status === 201) {
+        setCategories(response.data.data || []);
+      } else {
+        throw new Error(
+          response.message || "Erreur lors de la récupération des catégories"
+        );
+      }
+    } catch (error) {
+      console.error("Erreur dans getAllCatgr :", error);
+      toast.error("Erreur lors de la récupération des catégories");
+    }
+  };
 
   // Récupérer tous les produits
   const getAllProduit = async () => {
@@ -32,6 +51,7 @@ function AllProduits() {
   };
 
   useEffect(() => {
+    getAllCatgr();
     getAllProduit();
   }, []);
 
@@ -93,8 +113,8 @@ function AllProduits() {
 
   return (
     <AdminPanel>
-      <div className="min-h-screen flex items-center justify-center py-10">
-        <div className="w-full max-w-3xl rounded-lg shadow-gray-500 shadow-lg overflow-hidden">
+      <div className="min-h-screen flex items-start justify-center py-10">
+        <div className="w-full rounded-lg shadow-gray-500 shadow-lg overflow-hidden">
           <div className="bg-gradient-to-tr from-gray-4000 to-slate-400 py-2 px-4 flex justify-between items-center">
             <h2 className="text-3xl text-blue-950 font-extrabold text-center py-4 font-serif">
               Liste des Produits
@@ -119,6 +139,7 @@ function AllProduits() {
           <AjouterProduit
             fetchdata={getAllProduit}
             onClose={() => setAjouterProduit(false)}
+            categories={categories}
           />
         )}
 
@@ -133,6 +154,7 @@ function AllProduits() {
         {isEditing && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
             <EditProduit
+              categories={categories}
               produit={selectedProduit}
               onSave={handleUpdateProduit}
               onCancel={handleCancel}
